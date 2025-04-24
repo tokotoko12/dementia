@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>認知症ケア研修 グラレコ風サイト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Mochiy+Pop+P+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 手書き風の線のスタイル */
+        .grareco-border {
+            border: 2px solid #333; /* 少し太めの線 */
+            border-radius: 10px; /* 角を丸く */
+            box-shadow: 4px 4px 0px 0px #333; /* 手書き風の影 */
+            transition: all 0.2s ease-in-out; /* ホバーエフェクト用 */
+        }
+        .grareco-border:hover {
+             box-shadow: 2px 2px 0px 0px #333; /* ホバーで影を小さく */
+             transform: translate(2px, 2px); /* 少し移動 */
+        }
+
+        /* 吹き出し風の要素 */
+        .speech-bubble {
+            position: relative;
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 4px 4px 0px 0px #333;
+            margin-bottom: 20px; /* Add some space below speech bubbles */
+        }
+
+        /* 吹き出しの尻尾 (下向き) */
+        .speech-bubble.bottom:after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border: 8px solid transparent;
+            border-top-color: #fff;
+            border-bottom: 0;
+            margin-left: -8px;
+        }
+
+         .speech-bubble.bottom:before {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-top-color: #333;
+            border-bottom: 0;
+            margin-left: -10px;
+            z-index: -1;
+        }
+
+        /* 吹き出しの尻尾 (上向き) */
+         .speech-bubble.top:after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border: 8px solid transparent;
+            border-bottom-color: #fff;
+            border-top: 0;
+            margin-left: -8px;
+        }
+
+         .speech-bubble.top:before {
+            content: '';
+            position: absolute;
+            top: -16px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-bottom-color: #333;
+            border-top: 0;
+            margin-left: -10px;
+            z-index: -1;
+        }
+
+
+        /* 手書き風フォントクラス */
+        .font-mochiy-pop {
+            font-family: 'Mochiy Pop P One', sans-serif;
+        }
+
+        /* 背景色 */
+        body {
+            background-color: #f0f0e0; /* 少しクリームがかった背景 */
+            color: #333;
+            font-family: 'Kosugi Maru', sans-serif; /* デフォルトフォントをKosugi Maruに変更 */
+            line-height: 1.8; /* 行間を広げて読みやすく */
+        }
+
+        h1, h2, h3 {
+             font-family: 'Mochiy Pop P One', sans-serif; /* 見出し用フォントは維持 */
+             color: #555;
+             margin-bottom: 1rem;
+        }
+
+        /* アイコンのスタイル */
+        .section-icon {
+            font-size: 2.5rem; /* アイコンサイズ */
+            color: #f39c12; /* アイコンの色 */
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+         /* リストのスタイル */
+        ul.grareco-list {
+            list-style: none; /* デフォルトのリストスタイルを削除 */
+            padding-left: 0;
+        }
+
+        ul.grareco-list li {
+            position: relative;
+            padding-left: 25px; /* アイコン分のスペース */
+            margin-bottom: 10px;
+        }
+
+        ul.grareco-list li:before {
+            content: '✏️'; /* 手書き風の箇条書きアイコン */
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        /* 参照資料のスタイル */
+        .references a {
+            color: #3498db; /* リンク色 */
+            text-decoration: underline; /* 下線 */
+        }
+
+         /* クイズの質問スタイル */
+        .quiz-question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ffeeba; /* 少し明るい背景色 */
+            border: 2px dashed #e0a800; /* 点線ボーダー */
+            border-radius: 8px;
+        }
+
+        .quiz-question strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .quiz-options label {
+            display: block;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .quiz-answer {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #d4edda; /* 正解の背景色 */
+            border: 2px solid #28a745; /* 正解のボーダー */
+            border-radius: 8px;
+            display: none; /* 初期状態では非表示 */
+        }
+
+         .show-answer-btn {
+             background-color: #007bff;
+             color: white;
+             padding: 8px 15px;
+             border-radius: 5px;
+             cursor: pointer;
+             margin-top: 10px;
+             display: inline-block;
+         }
+
+        /* YouTube埋め込み用のコンテナ */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 アスペクト比 */
+            margin-bottom: 20px;
+            border: 2px solid #333; /* グラレコ風ボーダー */
+            border-radius: 10px;
+            overflow: hidden; /* 角丸を適用 */
+            box-shadow: 4px 4px 0px 0px #333; /* 手書き風の影 */
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body class="p-6">
+
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold mb-4">📖 認知症ケア研修資料</h1>
+       
+    </header>
+
+    <main class="container mx-auto max-w-4xl">
+
+        <section class="mb-12 p-6 bg-white grareco-border">
+             <h2 class="text-3xl font-semibold mb-4"><i class="fas fa-book-open section-icon"></i> はじめに</h2>
+             <p>この研修は、訪問介護事業所のヘルパーの皆様が、認知症のある利用者様に対して、より専門的かつ質の高いケアを提供できるようになることを目的としています。認知症の理解を深め、適切なコミュニケーション技術や対応方法を学ぶことで、利用者様とそのご家族が安心して在宅生活を送れるよう支援していきましょう。</p>
+        </section>
+
+        <section class="mb-12 p-6 bg-white grareco-border">
+            <h2 class="text-3xl font-semibold mb-4"><i class="fas fa-brain section-icon"></i> 1. 認知症の理解</h2>
+
+            <h3 class="text-2xl font-semibold mb-3">1-1. 認知症とは</h3>
+            <div class="speech-bubble bottom">
+                 <p>脳の機能が低下し、日常生活に支障が出る状態。</p>
+                 <p>単なる「もの忘れ」とは違うよ！</p>
+            </div>
+
+            <h3 class="text-2xl font-semibold mb-3">1-2. 認知症の種類と特徴</h3>
+            <ul class="grareco-list ml-4">
+                <li>**アルツハイマー型:** 新しいことが覚えにくいのが特徴！</li>
+                <li>**血管性:** 脳卒中などが原因。症状が「まだら」に出やすい。</li>
+                <li>**レビー小体型:** 幻視や体の動きにくさがあることも。</li>
+                <li>**前頭側頭型:** 性格や行動の変化が目立つタイプ。</li>
+            </ul>
+
+            <h3 class="text-2xl font-semibold mb-3">1-3. 中核症状と周辺症状（BPSD）</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div class="speech-bubble bottom">
+                    <h4 class="text-xl font-semibold mb-2">中核症状</h4>
+                    <ul class="grareco-list">
+                        <li>記憶障害</li>
+                        <li>見当識障害（時間・場所・人が分からない）</li>
+                        <li>判断力の低下</li>
+                        <li>言葉や道具の使い方が分からない</li>
+                    </ul>
+                 </div>
+                 <div class="speech-bubble bottom">
+                    <h4 class="text-xl font-semibold mb-2">周辺症状（BPSD）</h4>
+                     <p>中核症状＋その人の状況で変わる！</p>
+                    <ul class="grareco-list">
+                        <li>徘徊</li>
+                        <li>もの盗られ妄想</li>
+                        <li>幻覚・妄想</li>
+                        <li>介護への抵抗</li>
+                         <li>不安、怒りっぽさ</li>
+                    </ul>
+                 </div>
+            </div>
+        </section>
+
+        <section class="mb-12 p-6 bg-white grareco-border">
+             <h2 class="text-3xl font-semibold mb-4"><i class="fas fa-comments section-icon"></i> 2. コミュニケーション</h2>
+             <ul class="grareco-list ml-4">
+                <li>ゆっくり、はっきり話そう！</li>
+                <li>笑顔とアイコンタクト😊</li>
+                <li>最後まで話を聞いて、共感！</li>
+                <li>ジェスチャーも使ってみよう👋</li>
+                <li>選択肢は少なくね！</li>
+                <li>過去の楽しい思い出に寄り添う✨</li>
+                <li>BPSDはSOS！気持ちを考えよう💡</li>
+             </ul>
+        </section>
+
+        <section class="mb-12 p-6 bg-white grareco-border">
+            <h2 class="text-3xl font-semibold mb-4"><i class="fas fa-exclamation-triangle section-icon"></i> 3. 周辺症状（BPSD）への対応</h2>
+            <p class="mb-4">行動の「なぜ？」を考えて、適切に対応することが大切！</p>
+            <ul class="grareco-list ml-4">
+                <li>**徘徊:** 原因を探り、安全に寄り添う。「どちらへ？」と尋ねてみる。</li>
+                <li>**もの盗られ妄想:** 否定せず「一緒に探しましょうか」。見つかったら「よかったですね！」</li>
+                <li>**幻視・妄想:** 「～に見えるのですね」と受け止め、否定しない。</li>
+                <li>**介護への抵抗:** 理由を探り、無理強いせず、方法を変えてみる。</li>
+            </ul>
+        </section>
+
+        <section class="mb-12 p-6 bg-white grareco-border">
+            <h2 class="text-3xl font-semibold mb-4"><i class="fas fa-home section-icon"></i> 4. 安全・安心な環境づくり</h2>
+             <ul class="grareco-list ml-4">
+                <li>整理整頓で転倒防止！</li>
+                <li>部屋を明るく💡</li>
+                <li>温度・湿度を快適に</li>
+                <li>家具は大きく変えない</li>
+                <li>ケアの前後には声かけを忘れずに！</li>
+                <li>プライバシーに配慮👤</li>
+             </ul>
+        </section>
+
+        <section class="mb-12 p-6 bg-white grareco-border">
+            <h2 class="text-3xl font-semibold mb-4"><i class="fas fa-users section-icon"></i> 5. 連携を大切に</h2>
+             <ul class="grareco-list ml-4">
+                <li>ご家族や関係職種と「ほうれんそう」！</li>
+                <li>ご家族の負担にも配慮🤝</li>
+                <li>サービス担当者会議で情報交換！</li>
+             </ul>
+        </section>
+
+        <section class="mb-12 p-6 bg-white grareco-border">
+            <h2 class="text-3xl font-semibold mb-4"><i class="fas fa-heart section-icon"></i> 6. 介護者のセルフケア</h2>
+             <p class="mb-4">自分自身も大切に！</p>
+             <ul class="grareco-list ml-4">
+                <li>しっかり休息をとる😴</li>
+                <li>ストレス解消法を見つける！</li>
+                <li>悩みを話せる相手を持つ🗣️</li>
+                <li>学び続ける姿勢📚</li>
+             </ul>
+        </section>
+
+
+        <section class="mb-12 p-6 bg-white grareco-border">
+             <h2 class="text-3xl font-semibold mb-4"><i class="fas fa-question-circle section-icon"></i> 小テストで理解度チェック！</h2>
+
+             <div class="quiz-question">
+                 <strong>Q1: 認知症の中核症状に含まれるものはどれですか？</strong>
+                 <div class="quiz-options">
+                     <label><input type="radio" name="q1" value="a"> a) 徘徊</label>
+                     <label><input type="radio" name="q1" value="b"> b) もの盗られ妄想</label>
+                     <label><input type="radio" name="q1" value="c"> c) 記憶障害</label>
+                 </div>
+                 <div class="quiz-answer" id="answer1">
+                     <strong>正解: c) 記憶障害</strong> <br>解説: 徘徊やもの盗られ妄想は周辺症状（BPSD）です。記憶障害は脳の機能低下によって直接起こる中核症状です。
+                 </div>
+                  <span class="show-answer-btn" onclick="toggleAnswer('answer1')">正解を見る</span>
+             </div>
+
+             <div class="quiz-question">
+                 <strong>Q2: 認知症の方とのコミュニケーションで大切なことは何ですか？</strong>
+                 <div class="quiz-options">
+                     <label><input type="radio" name="q2" value="a"> a) 早口でたくさんの情報を一度に伝える</label>
+                     <label><input type="radio" name="q2" value="b"> b) 相手のペースに合わせ、尊厳を保つ</label>
+                     <label><input type="radio" name="q2" value="c"> c) 事実と異なる話をすぐに訂正する</label>
+                 </div>
+                  <div class="quiz-answer" id="answer2">
+                     <strong>正解: b) 相手のペースに合わせ、尊厳を保つ</strong> <br>解説: 認知症の方とのコミュニケーションでは、ゆっくり話す、相手のペースに合わせる、否定しないなどが重要です。
+                 </div>
+                 <span class="show-answer-btn" onclick="toggleAnswer('answer2')">正解を見る</span>
+             </div>
+
+             <div class="quiz-question">
+                 <strong>Q3: 周辺症状（BPSD）の一つである「もの盗られ妄想」への適切な対応は？</strong>
+                 <div class="quiz-options">
+                     <label><input type="radio" name="q3" value="a"> a) 「誰も盗っていませんよ」と強く否定する</label>
+                     <label><input type="radio" name="q3" value="b"> b) 無視して別の話題にそらす</label>
+                     <label><input type="radio" name="q3" value="c"> c) 「一緒に探しましょうか」と寄り添う</label>
+                 </div>
+                  <div class="quiz-answer" id="answer3">
+                     <strong>正解: c) 「一緒に探しましょうか」と寄り添う</strong> <br>解説: 否定は混乱や不信感を招きやすいです。まずは気持ちに寄り添い、一緒に探す姿勢を示すことが大切です。
+                 </div>
+                 <span class="show-answer-btn" onclick="toggleAnswer('answer3')">正解を見る</span>
+             </div>
+
+             <div class="quiz-question">
+                 <strong>Q4: 認知症の方の安全・安心な環境づくりのために有効なことは？</strong>
+                 <div class="quiz-options">
+                     <label><input type="radio" name="q4" value="a"> a) 家具の配置を頻繁に変えて刺激を与える</label>
+                     <label><input type="radio" name="q4" value="b"> b) 部屋を暗くして落ち着いた雰囲気にする</label>
+                     <label><input type="radio" name="q4" value="c"> c) つまずきやすいものを片付けて整理整頓する</label>
+                 </div>
+                  <div class="quiz-answer" id="answer4">
+                     <strong>正解: c) つまずきやすいものを片付けて整理整頓する</strong> <br>解説: 慣れ親しんだ環境の維持や、転倒リスクの軽減（整理整頓、明るい照明など）が安全・安心につながります。
+                 </div>
+                 <span class="show-answer-btn" onclick="toggleAnswer('answer4')">正解を見る</span>
+             </div>
+
+             <div class="quiz-question">
+                 <strong>Q5: 介護者のセルフケアとして推奨されることは？</strong>
+                 <div class="quiz-options">
+                     <label><input type="radio" name="q5" value="a"> a) 疲れを感じても休憩をとらずに頑張る</label>
+                     <label><input type="radio" name="q5" value="b"> b) 仕事の悩みを一人で抱え込む</label>
+                     <label><input type="radio" name="q5" value="c"> c) 休息をしっかりとる、相談できる相手を持つ</label>
+                 </div>
+                  <div class="quiz-answer" id="answer5">
+                     <strong>正解: c) 休息をしっかりとる、相談できる相手を持つ</strong> <br>解説: 介護者が心身ともに健康であることが、質の高いケアを持続するために不可欠です。
+                 </div>
+                 <span class="show-answer-btn" onclick="toggleAnswer('answer5')">正解を見る</span>
+             </div>
+
+             <script>
+                 function toggleAnswer(answerId) {
+                     const answerElement = document.getElementById(answerId);
+                     if (answerElement.style.display === 'none' || answerElement.style.display === '') {
+                         answerElement.style.display = 'block';
+                     } else {
+                         answerElement.style.display = 'none';
+                     }
+                 }
+             </script>
+
+        </section>
+
+        <section class="mb-12 p-6 bg-white grareco-border references">
+            <h2 class="text-3xl font-semibold mb-4"><i class="fas fa-link section-icon"></i> 参考資料</h2>
+            <ul class="grareco-list ml-4">
+                <li>厚生労働省 認知症施策: <a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/hukushi_kaigo/kaigo_koureisha/ninchi/index.html" target="_blank">リンク</a></li>
+                <li>各自治体の認知症関連情報: お住まいの自治体ウェブサイトをご確認ください。</li>
+                <li>認知症に関する専門書籍・ウェブサイト（国内）:
+                    <ul class="grareco-list ml-4">
+                        <li>国立精神・神経医療研究センター 認知症情報ページ: <a href="https://kokoro.ncnp.go.jp/disease.php?@uid=WwE9LLpYbVZTIDMI" target="_blank">リンク</a></li>
+                        <li>国立長寿医療研究センター 認知症情報ポータル: <a href="https://www.ncgg.go.jp/dementia/" target="_blank">リンク</a></li>
+                        <li>認知症介護情報ネットワーク: <a href="https://www.dcnet.gr.jp/" target="_blank">リンク</a></li>
+                        <li>認知症ねっと: <a href="https://info.ninchisho.net/" target="_blank">リンク</a></li>
+                    </ul>
+                </li>
+                 <li>認知症に関する専門情報（海外）:
+                    <ul class="grareco-list ml-4">
+                        <li>世界保健機関（WHO）認知症関連情報: <a href="https://www.who.int/news-room/fact-sheets/detail/dementia" target="_blank">リンク</a> (英語)</li>
+                        <li>Alzheimer's Disease International (ADI) ウェブサイト: <a href="https://www.alzint.org/" target="_blank">リンク</a> (英語) - 世界アルツハイマーレポートなど、国際的な統計や研究、政策提言に関する情報が豊富です。</li>
+                        <li>Home-based care for people with dementia: A systematic review protocol (PubMed): <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9629276/" target="_blank">リンク</a> (英語) - 認知症のある方への在宅ケアに関する系統的レビューのプロトコルです。研究の動向を知る上で参考になります。</li>
+                        <li>NICE (National Institute for Health and Care Excellence) ガイドライン: <a href="https://www.nice.org.uk/guidance/ng97" target="_blank">リンク</a> (英語) - イギリスの医療・ケアに関するガイドライン。認知症ケアに関する詳細な推奨事項が含まれます。</li>
+                        <li>Journal of Dementia Care: <a href="https://journalofdementiacare.co.uk/" target="_blank">リンク</a> (英語) - 認知症ケアに特化した国際的なジャーナルです。</li>
+                         <li>World Alzheimer Report 2024 (Alzheimer's Disease International): <a href="https://www.alzint.org/resource/world-alzheimer-report-2024/" target="_blank">リンク</a> (英語) - 認知症に関する最新の世界的状況や課題についての報告書です。</li>
+                         <li>Global status report on the public health response to dementia (WHO): <a href="https://www.who.int/publications/i/item/9789240033245" target="_blank">リンク</a> (英語) - WHOによる認知症への公衆衛生上の対応に関する包括的な報告書です。</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+
+    </main>
+
+    <footer class="text-center mt-12 text-sm text-gray-600">
+        <p>© 2023 認知症ケア研修資料</p>
+    </footer>
+
+</body>
+</html>
